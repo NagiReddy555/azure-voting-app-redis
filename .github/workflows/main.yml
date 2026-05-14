@@ -13,25 +13,30 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: ACR build
-        id: build-push-acr
-        uses: azure/acr-build@v1
-        with:
-          service_principal: ${{ secrets.SERVICE_PRINCIPAL }}
-          service_principal_password: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
-          tenant: ${{ secrets.TENANT }}
-          registry: ${{ secrets.REGISTRY }}
-          repository: ${{ secrets.REPOSITORY }}
-          image: azure-vote-front
-          folder: azure-vote
-          branch: master
-          tag: ${{ github.sha }}
+      # - name: ACR build
+      #   id: build-push-acr
+      #   uses: azure/acr-build@v1
+      #   with:
+      #     service_principal: ${{ secrets.SERVICE_PRINCIPAL }}
+      #     service_principal_password: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
+      #     tenant: ${{ secrets.TENANT }}
+      #     registry: ${{ secrets.REGISTRY }}
+      #     repository: ${{ secrets.REPOSITORY }}
+      #     image: azure-vote-front
+      #     folder: azure-vote
+      #     branch: master
+      #     tag: ${{ github.sha }}
 
       - name: Azure login
         id: login
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Build and push image to ACR
+        run: |
+          az acr login --name ${{ secrets.REGISTRY }}
+          docker build -t ${{ secrets.REGISTRY }}.azurecr.io/${{ secrets.REPOSITORY }}/azure-vote-front:${{ github.sha }} ./azure-vote
+          docker push ${{ secrets.REGISTRY }}.azurecr.io/${{ secrets.REPOSITORY }}/azure-vote-front:${{ github.sha }}
       - name: Set AKS context
         id: set-context
         uses: azure/aks-set-context@v3
