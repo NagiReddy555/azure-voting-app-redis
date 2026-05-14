@@ -19,9 +19,9 @@ jobs:
         with:
           service_principal: ${{ secrets.SERVICE_PRINCIPAL }}
           service_principal_password: ${{ secrets.SERVICE_PRINCIPAL_PASSWORD }}
-          tenant: ${{ secrets.TENANT  }}
-          registry: ${{ secrets.REGISTRY  }}
-          repository: ${{ secrets.REPOSITORY  }}
+          tenant: ${{ secrets.TENANT }}
+          registry: ${{ secrets.REGISTRY }}
+          repository: ${{ secrets.REPOSITORY }}
           image: azure-vote-front
           folder: azure-vote
           branch: master
@@ -32,14 +32,12 @@ jobs:
         uses: azure/login@v1.4.3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Set AKS context
         id: set-context
         uses: azure/aks-set-context@v3
         with:
           resource-group: ${{ secrets.RESOURCE_GROUP  }}
           cluster-name: ${{ secrets.CLUSTER_NAME  }}
-
       - name: Setup kubectl
         id: install-kubectl
         uses: azure/setup-kubectl@v3
@@ -51,5 +49,5 @@ jobs:
           namespace: default
           manifests: |
             azure-vote-all-in-one-redis.yaml
-          images: ${{ secrets.REGISTRY  }}.azurecr.io/${{ secrets.REPOSITORY  }}/azure-vote-front:${{ github.sha }}
+          images: ${{ secrets.REGISTRY }}.azurecr.io/${{ secrets.REPOSITORY }}/azure-vote-front:${{ github.sha }}
           pull-images: false
